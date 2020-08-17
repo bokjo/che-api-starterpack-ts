@@ -1,0 +1,37 @@
+service: che-api
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: staging
+  region: eu-central-1
+  memorySize: 256
+  timeout: 30
+
+custom:
+  vpc-staging:
+    securityGroupIds:
+      - sg-9nazrlxnpbvh95c8x     # EXAMPLE             
+    subnetIds:
+      - subnet-9nazrlxnpbvh95c8x          
+  vpc-prod:
+    securityGroupIds:
+      - sg-9nazrlxnpbvh95c8x
+    subnetIds:
+      - subnet-9nazrlxnpbvh95c8x
+  misc:
+    staging: 'TEST_STAGING'    
+    prod: 'TEST_PROD'
+
+functions:
+  app:
+    handler: index.handler
+    vpc: ${self:custom.vpc-${self:provider.stage}}
+    events:
+      - http: ANY /
+      - http: 'ANY {proxy+}'
+    environment:
+      TEST_ENV: ${self:custom.misc.${self:provider.stage}} 
+
+plugins:
+  - serverless-offline

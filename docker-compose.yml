@@ -1,0 +1,45 @@
+version: "3"
+services:
+    postgres:
+      image: postgres:12
+      container_name: postgres
+      environment:
+          PGDATA: /mnt/db_volume/postgres_data
+          POSTGRES_DB: boilerplate
+          POSTGRES_USER: dev
+          POSTGRES_PASSWORD: super_secret
+      ports:
+          - "5432:5432"
+      volumes:
+          - ./db/postgres/db_volume:/mnt/db_volume:delegated
+    
+    mongo:
+      image: mongo:latest
+      container_name: mongo
+      restart: always
+      environment:
+          MONGO_INITDB_ROOT_USERNAME: dev
+          MONGO_INITDB_ROOT_PASSWORD: super_secret
+      ports:
+          - 27017:27017
+      volumes:
+          - ./db/mongo/mongo_data:/data/db
+          - ./db/mongo/mongo_config:/data/configdb
+          - ./db/mongo/init.js:/docker-entrypoint-initdb.d/init.js:ro
+    
+    redis:
+      image: redis:5
+      container_name: redis
+      ports:
+          - "6379:6379"
+    
+    xray:
+      image: amazon/aws-xray-daemon:latest
+      container_name: xray
+      ports: 
+          - "2000:2000/udp"
+      command: --local-mode
+      environment:
+          AWS_ACCESS_KEY_ID:
+          AWS_SECRET_ACCESS_KEY:
+          AWS_REGION: eu-central-1        

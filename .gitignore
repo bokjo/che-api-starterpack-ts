@@ -102,3 +102,16 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Ignore the transpiled JS
+src/**/*.js
+src/**/*.js.map
+!src/public/**/*
+tests/**/*.js
+tests/**/*.js.map
+coverage/
+
+db/postgres/db_volume/
+!db/postgres/db_volume/.gitkeep
+
+db/mongo/mongo_data
